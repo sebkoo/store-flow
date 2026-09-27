@@ -1,0 +1,22 @@
+# dependencies
+node_modules/
+# secrets and local settings
+.env
+.env.local
+local.properties
+# build output
+dist/
+build/
+.next/
+out/
+target/
+.gradle/
+.kotlin/
+.scala-build/
+cdk.out/
+Claude outputs/
+# editors and OS
+xcuserdata/
+.idea/
+.DS_Store
+*.log
