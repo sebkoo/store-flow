@@ -4,6 +4,8 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
     "start": "node dist/index.js"
   },
   "dependencies": {
