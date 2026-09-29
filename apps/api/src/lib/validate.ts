@@ -11,6 +11,10 @@ export const validate = <K extends Target, T extends ZodType>(target: K, schema:
         path: issue.path.map(String).join('.'),
         message: issue.message
       }))
-      throw new ApiError(400, 'VALIDATION_FAILED', 'Request validation failed', details)
+      throw new ApiError(400, 
+        'VALIDATION_FAILED', 
+        details[0]?.message ?? 'Request is not valid', 
+        details
+      )
     }
   })

@@ -30,14 +30,11 @@ export const CreateIssueSchema = z.object({
 })
 export type CreateIssueInput = z.infer<typeof CreateIssueSchema>
 
-export type Issue = {
-  id: string
-  storeId: string
-  title: string
-  type: z.infer<typeof IssueType>
-  priority: z.infer<typeof IssuePriority>
-  status: z.infer<typeof IssueStatus>
-  assigneeId: string | null
-  createdAt: string
-  updatedAt: string
-}
+export const ListIssuesQuery = z.object({
+  status: IssueStatus.optional(),
+  type: IssueType.optional()
+})
+export const IssueIdParam = z.object({
+  id: z.uuid('Issue id must be a UUID')
+})
+export type IssueStatusValue = z.infer<typeof IssueStatus>
