@@ -1,16 +1,17 @@
 import { Hono } from "hono";
-import { zValidator } from "@hono/zod-validator";
 import { randomUUID } from "node:crypto";
+import type { AppEnv } from "../types.js";
+import { validate } from "../lib/validate.js";
 import { CreateIssueSchema, type Issue } from "../schemas/issue.js";
 
 const issues: Issue[] = []
 
-export const issueRoutes = new Hono()
+export const issueRoutes = new Hono<AppEnv>()
 
 issueRoutes.get('/', (c) => c.json({
   items: issues
 }))
-issueRoutes.post('/', zValidator('json', CreateIssueSchema), (c) => {
+issueRoutes.post('/', validate('json', CreateIssueSchema), (c) => {
   const input = c.req.valid('json')
   const now = new Date().toISOString()
   const issue: Issue = {

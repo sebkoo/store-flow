@@ -51,4 +51,15 @@ describe('POST /v1/issues', () => {
     })
     expect(res.status).toBe(400)
   })
+  it('answers errors in our shape, with the request id', async () => {
+    const res = await post({ 
+      title: 'no',
+      type: 'OTHER'
+    })
+    const body = await res.json()
+    expect(res.status).toBe(400)
+    expect(body.error.code).toBe('VALIDATION_FAILED')
+    expect(body.error.details[0].path).toBe('title')
+    expect(body.error.requestId).toBe(res.headers.get('X-Request-Id'))
+  })
 })
