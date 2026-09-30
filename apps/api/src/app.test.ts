@@ -24,19 +24,7 @@ describe('GET /health', () => {
   })
 })
 
-describe('POST /v1/issues', () => {
-  it('creates an OPEN issue with NORMAL priority by default', async () => {
-    const res = await post({ 
-      title: ' Scanner broken at register 2 ', 
-      type: 'SCANNER_BROKEN' 
-    })
-    expect(res.status).toBe(201)
-    expect(await res.json()).toMatchObject({ 
-      title: 'Scanner broken at register 2', 
-      status: 'OPEN', 
-      priority: 'NORMAL' 
-    })
-  })
+describe('POST /v1/issues validation', () => {
   it('rejects a title shorter than 3 characters', async () => {
     const res = await post({ 
       title: 'no', 

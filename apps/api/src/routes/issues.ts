@@ -7,9 +7,15 @@ import { CreateIssueSchema, IssueIdParam, ListIssuesQuery } from "../schemas/iss
 
 const STORE_ID = 'store-001'
 const COLUMNS = `
-  id, store_id AS "storeId", 
-  title, type, priority, status, assignee_id AS "assigneeId", 
-  created_at as "createdAt", updated_at AS "updatedAt"`
+  id, 
+  store_id AS "storeId", 
+  title, 
+  type, 
+  priority, 
+  status, 
+  assignee_id AS "assigneeId", 
+  created_at AS "createdAt", 
+  updated_at AS "updatedAt"`
 
 export const issueRoutes = new Hono<AppEnv>()
 
@@ -18,7 +24,7 @@ issueRoutes.get('/',
     const { status, type } = c.req.valid('query')
     const { rows } = await pool.query(`
       SELECT ${COLUMNS} FROM issues
-      WHERE store_id $1 AND
+      WHERE store_id = $1 AND
       ($2::text IS NULL OR status = $2) AND
       ($3::text IS NULL OR type = $3)
       ORDER BY created_at DESC LIMIT 100`,
