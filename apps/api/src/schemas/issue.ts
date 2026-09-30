@@ -19,6 +19,7 @@ export const IssueStatus = z.enum([
   'IN_PROGRESS', 
   'RESOLVED'
 ])
+
 export const CreateIssueSchema = z.object({
   title: z.string().trim()
     .min(3, 'Title must be at least 3 characters')
@@ -28,7 +29,6 @@ export const CreateIssueSchema = z.object({
   type: IssueType,
   priority: IssuePriority.default('NORMAL')
 })
-export type CreateIssueInput = z.infer<typeof CreateIssueSchema>
 
 export const ListIssuesQuery = z.object({
   status: IssueStatus.optional(),
@@ -37,4 +37,14 @@ export const ListIssuesQuery = z.object({
 export const IssueIdParam = z.object({
   id: z.uuid('Issue id must be a UUID')
 })
+
+export const TransitionSchema = z.object({
+  to: IssueStatus,
+  assigneeId: z.uuid('assigneeId must be a UUID').optional(),
+}).refine((body) => body.to !== 'ASSIGNED' || 
+                    body.assigneeId !== undefined, {
+  error: 'assigneeId is required when assigning',
+  path: ['assigneeId']
+})
+
 export type IssueStatusValue = z.infer<typeof IssueStatus>

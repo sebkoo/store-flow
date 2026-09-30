@@ -51,4 +51,47 @@ describe('issues in PostgreSQL', () => {
       i: { status: string }) => i.status === 'RESOLVED'
     )).toBe(true)
   })
+  it('walks OPEN → ASSIGNED → IN_PROGRESS → RESOLVED', async () => {
+    const created = await (
+      await app.request('/v1/issues', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: 'Shelf light flickering',
+          type: 'OTHER' })})
+    ).json()
+    createdIds.push(created.id)
+
+    const move = (body: unknown) => 
+      app.request(`/v1/issues/${created.id}/transition`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      })
+    expect((await move({ 
+      to: 'ASSIGNED', 
+      assigneeId: '7d2f5a0e-3c11-4b6a-9e43-2b8f0c6a1d55' })
+    ).status).toBe(200)
+  })
+  it('refuses OPEN → RESOLVED with 409 and assigning without an assignee with 400', async () => {
+    const created = await (
+      await app.request('/v1/issues', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: 'Receipt printer jammed',
+          type: 'PRINTER_FAILURE' })})
+    ).json()
+    createdIds.push(created.id)
+
+    const move = (body: unknown) => app.request(`/v1/issues/${created.id}/transition`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
+    const jump = await move({ to: 'RESOLVED' })
+    expect(jump.status).toBe(409)
+    expect((await jump.json()).error.code).toBe('INVALID_TRANSITION')
+    expect((await move({ to: 'ASSIGNED' })).status).toBe(400)
+  })
 })
