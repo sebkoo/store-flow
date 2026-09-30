@@ -11,7 +11,7 @@ import SwiftUI
 struct StoreFlowApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            IssueListView()
         }
     }
 }
