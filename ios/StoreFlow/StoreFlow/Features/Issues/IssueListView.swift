@@ -9,6 +9,7 @@ import SwiftUI
 
 struct IssueListView: View {
     @State private var model: IssueListViewModel
+    @State private var isCreating = false
     
     init(model: IssueListViewModel? = nil) {
         _model = State(initialValue: model ?? IssueListViewModel())
@@ -39,6 +40,14 @@ struct IssueListView: View {
                 }
             }
             .navigationTitle("Store issues")
+            .toolbar {
+                Button("New issue", systemImage: "plus") {
+                    isCreating = true
+                }
+            }
+            .sheet(isPresented: $isCreating) {
+                CreateIssueView(onCreate: model.create)
+            }
             .task { await model.load() }
             .refreshable { await model.load() }
         }

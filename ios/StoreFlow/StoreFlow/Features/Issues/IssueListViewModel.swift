@@ -33,4 +33,9 @@ final class IssueListViewModel {
             state = .failed(error.localizedDescription)
         }
     }
+    
+    func create(_ request: CreateIssueRequest) async throws {
+        let issue = try await service.createIssue(request)
+        issues.insert(issue, at: 0)
+    }
 }
