@@ -8,20 +8,22 @@
 import Testing
 @testable import StoreFlow
 
+typealias Issue = StoreFlow.Issue
+
 @MainActor
 final class FakeIssueService: IssueService {
-    var result: Result<[StoreFlow.Issue], any Error>
+    var result: Result<[Issue], any Error>
     private(set) var created: [CreateIssueRequest] = []
 
-    init(result: Result<[StoreFlow.Issue], any Error>) {
+    init(result: Result<[Issue], any Error>) {
         self.result = result
     }
     
-    func listIssues() async throws -> [StoreFlow.Issue] {
+    func listIssues() async throws -> [Issue] {
         try result.get()
     }
     
-    func createIssue(_ request: StoreFlow.CreateIssueRequest) async throws -> StoreFlow.Issue {
+    func createIssue(_ request: CreateIssueRequest) async throws -> Issue {
         created.append(request)
         return Issue.samples[0]
     }
