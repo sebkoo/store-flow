@@ -7,7 +7,7 @@ enum class IssueStatus {
     OPEN,
     ASSIGNED,
     IN_PROGRESS,
-    REJECTED,
+    RESOLVED,
 }
 @Serializable
 enum class IssuePriority {
