@@ -6,20 +6,14 @@
 //
 
 import Foundation
+import StoreFlowShared
 
 struct PreviewIssueService: IssueService {
-    var issues: [Issue] = Issue.samples
-    
-    func listIssues() async throws -> [Issue] { issues }
+    func listIssues() async throws -> [Issue] { PreviewData.issues }
     func createIssue(_ request: CreateIssueRequest) async throws -> Issue {
-        Issue(id: UUID().uuidString,
-              storeId: "store-001",
-              title: request.title,
-              type: request.type,
-              priority: request.priority,
-              status: "OPEN",
-              assigneeId: nil,
-              createdAt: "2026-09-25T10:00:00Z",
-              updatedAt: "2026-09-25T10:00:00Z")
+        PreviewData.issues[0]
+    }
+    func transition(issueId: String, to target: IssueStatus, assigneeId: String?) async throws -> Issue {
+        PreviewData.issues[1]
     }
 }

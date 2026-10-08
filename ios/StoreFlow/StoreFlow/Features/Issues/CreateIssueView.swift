@@ -6,31 +6,20 @@
 //
 
 import SwiftUI
+import StoreFlowShared
 
 struct CreateIssueView: View {
     let onCreate: (CreateIssueRequest) async throws -> Void
-    
     @Environment(\.dismiss) private var dismiss
+    
     @State private var title = ""
-    @State private var type = "SCANNER_BROKEN"
-    @State private var priority = "NORMAL"
+    @State private var type: IssueType = IssueOptions.shared.types[0]
+    @State private var priority: IssuePriority = IssueOptions.shared.defaultPriority
     @State private var errorMessage: String?
     @State private var isSaving = false
-    
-    private let types = ["SCANNER_BROKEN",
-                         "POS_OFFLINE",
-                         "SHELF_FULL",
-                         "LOW_INVENTORY",
-                         "PRINTER_FAILURE",
-                         "OTHER"]
-    private let priorities = ["LOW",
-                              "NORMAL",
-                              "HIGH"]
+
     private var titleError: String? {
-        let count = title.trimmingCharacters(in: .whitespacesAndNewlines).count
-        if count < 3 { return "Title must be at least 3 characters" }
-        if count > 120 { return "Title must be at most 120 characters" }
-        return nil
+        IssueValidator.shared.titleError(title: title)
     }
     
     var body: some View {
@@ -47,10 +36,14 @@ struct CreateIssueView: View {
                 }
                 Section("Details") {
                     Picker("Type", selection: $type) {
-                        ForEach(types, id: \.self) { Text($0) }
+                        ForEach(IssueOptions.shared.types, id: \.self) {
+                            Text($0.name).tag($0)
+                        }
                     }
                     Picker("Priority", selection: $priority) {
-                        ForEach(priorities, id: \.self) { Text($0) }
+                        ForEach(IssueOptions.shared.priorities, id: \.self) {
+                            Text($0.name).tag($0)
+                        }
                     }
                 }
                 if let errorMessage {

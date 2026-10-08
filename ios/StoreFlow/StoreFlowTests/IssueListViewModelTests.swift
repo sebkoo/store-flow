@@ -6,9 +6,16 @@
 //
 
 import Testing
+import StoreFlowShared
 @testable import StoreFlow
 
-typealias Issue = StoreFlow.Issue
+typealias Issue = StoreFlowShared.Issue
+
+struct FakeFailure: LocalizedError {
+    var errorDescription: String? {
+        "The server answered 502 in an unexpected format."
+    }
+}
 
 @MainActor
 final class FakeIssueService: IssueService {
@@ -25,7 +32,13 @@ final class FakeIssueService: IssueService {
     
     func createIssue(_ request: CreateIssueRequest) async throws -> Issue {
         created.append(request)
-        return Issue.samples[0]
+        return PreviewData.issues[0]
+    }
+    func transition(issueId: String,
+                    to target: IssueStatus,
+                    assigneeId: String?
+    ) async throws -> Issue {
+        PreviewData.issues[1]
     }
 }
 
@@ -33,7 +46,7 @@ final class FakeIssueService: IssueService {
 struct IssueListViewModelTests {
     @Test("Load shows issues")
     func loadShowsIssues() async {
-        let fake = FakeIssueService(result: .success(Issue.samples))
+        let fake = FakeIssueService(result: .success(PreviewData.issues))
         let model = IssueListViewModel(service: fake)
         await model.load()
         #expect(model.issues.count == 2)
@@ -41,7 +54,7 @@ struct IssueListViewModelTests {
     }
     @Test("Load failure shows a message")
     func loadFailureShowsMessage() async {
-        let fake = FakeIssueService(result: .failure(APIClientError.unreadableResponse(status: 502)))
+        let fake = FakeIssueService(result: .failure(FakeFailure()))
         let model = IssueListViewModel(service: fake)
         await model.load()
         #expect(model.issues.isEmpty)
@@ -53,19 +66,31 @@ struct IssueListViewModelTests {
         let model = IssueListViewModel(service: fake)
         try await model.create(CreateIssueRequest(
             title: "Printer out of paper",
-            type: "PRINTER_FAILURE",
-            priority: "NORMAL")
+            type: IssueType.printerFailure,
+            priority: IssueOptions.shared.defaultPriority)
         )
         #expect(fake.created.count == 1)
-        #expect(model.issues.first?.id == Issue.samples[0].id)
+        #expect(model.issues.first?.id == PreviewData.issues[0].id)
     }
     @Test("A retry after failure recovers")
     func retryRecovers() async throws {
-        let fake = FakeIssueService(result: .failure(APIClientError.unreadableResponse(status: 502)))
+        let fake = FakeIssueService(result: .failure(FakeFailure()))
         let model = IssueListViewModel(service: fake)
         await model.load()
-        fake.result = .success(Issue.samples)
+        fake.result = .success(PreviewData.issues)
         await model.load()
         #expect(model.state == .loaded)
+    }
+}
+
+struct KotlinBridgeTests {
+    @Test("A Kotlin error message reaches Swift with its messsage")
+    func kotlinErrorKeepsItsMessage() {
+        let body = #"{"error":{"code":"INVALID_TRANSITION","message":"Cannot move an issue from OPEN to RESOLVED","requestId":"r-1"}}"#
+        let conflictResponse = ApiResponse(status: 409, body: body)
+        let error = #expect(throws: (any Error).self) {
+            _ = try StoreFlowResponses.shared.issue(response: conflictResponse)
+        }
+        #expect(error?.localizedDescription == "Cannot move an issue from OPEN to RESOLVED")
     }
 }

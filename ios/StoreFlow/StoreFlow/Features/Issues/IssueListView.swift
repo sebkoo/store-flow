@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import StoreFlowShared
 
 struct IssueListView: View {
     @State private var model: IssueListViewModel
@@ -17,7 +18,7 @@ struct IssueListView: View {
     
     var body: some View {
         NavigationStack {
-            List(model.issues) { issue in
+            List(model.issues, id: \.id) { issue in
                 IssueRow(issue: issue)
             }
             .overlay {
@@ -59,16 +60,16 @@ struct IssueRow: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(issue.type)
+            Text(issue.title)
                 .font(.headline)
             HStack(spacing: 8) {
-                Text(issue.status)
+                Text(issue.status.name)
                     .font(.caption.bold())
                     .padding(.horizontal, 6)
                     .background(.blue.opacity(0.15), in: Capsule())
-                Text(issue.priority)
+                Text(issue.priority.name)
                     .font(.caption)
-                Text(issue.type)
+                Text(issue.type.name)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

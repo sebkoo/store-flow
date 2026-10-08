@@ -7,6 +7,7 @@
 
 import Foundation
 import Observation
+import StoreFlowShared
 
 @MainActor
 @Observable
@@ -37,5 +38,17 @@ final class IssueListViewModel {
     func create(_ request: CreateIssueRequest) async throws {
         let issue = try await service.createIssue(request)
         issues.insert(issue, at: 0)
+    }
+    
+    func transition(_ issue: Issue,
+                    to target: IssueStatus,
+                    assigneeId: String?
+    ) async throws {
+        let updated = try await service.transition(issueId: issue.id,
+                                                   to: target,
+                                                   assigneeId: assigneeId)
+        if let index = issues.firstIndex(where: { $0.id == updated.id }) {
+            issues[index] = updated
+        }
     }
 }
