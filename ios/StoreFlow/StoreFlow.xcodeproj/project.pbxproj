@@ -93,6 +93,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7FC88811306CD2680047508F /* Build configuration list for PBXNativeTarget "StoreFlow" */;
 			buildPhases = (
+				7F6688E93071E5F00033DAB2 /* Build Kotlin shared code */,
 				7FC887EE306CD2670047508F /* Sources */,
 				7FC887EF306CD2670047508F /* Frameworks */,
 				7FC887F0306CD2670047508F /* Resources */,
@@ -210,6 +211,29 @@
 			);
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		7F6688E93071E5F00033DAB2 /* Build Kotlin shared code */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			name = "Build Kotlin shared code";
+			shellPath = /bin/sh;
+			shellScript = (
+				"if [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then",
+				"    echo \"Skipping Gradle build: OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED=YES\"",
+				"    exit 0",
+				"fi",
+				"if [ -z \"$JAVA_HOME\" ]; then",
+				"    JAVA_HOME=\"$(/usr/libexec/java_home -F -v 21)\" || ",
+				"    { echo \"error: JDK 21 not found. Intall it: brew install --cask temurin@21\"; exit 1; }",
+				"    export JAVA_HOME",
+				"fi",
+				"cd \"$SRCROOT/../../mobile\"",
+				"./gradlew :shared:embedAndSignAppleFrameworkForXcode",
+				"",
+			);
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		7FC887EE306CD2670047508F /* Sources */ = {
@@ -366,6 +390,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -408,6 +433,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
