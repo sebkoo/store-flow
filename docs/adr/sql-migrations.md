@@ -2,6 +2,7 @@
 
 - Status: Accepted
 - Date: 2026-09-29 · Phase 04
+- Revisited 2026-10-09 · Phase 08: rejected alternative I missed - Flyway or Liquibase (checksums, a lock); I keep the small runner to learn what such a tool does, and I never edit a migration that already ran.
 
 ## Context
 
