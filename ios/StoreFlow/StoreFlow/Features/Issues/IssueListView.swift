@@ -19,7 +19,15 @@ struct IssueListView: View {
     var body: some View {
         NavigationStack {
             List(model.issues, id: \.id) { issue in
-                IssueRow(issue: issue)
+                NavigationLink {
+                    IssueDetailView(issue: issue) { target in
+                        try await model.transition(issue,
+                                                   to: target,
+                                                   assigneeId: assignee(for: target))
+                    }
+                } label: {
+                    IssueRow(issue: issue)
+                }
             }
             .overlay {
                 switch model.state {
@@ -52,6 +60,10 @@ struct IssueListView: View {
             .task { await model.load() }
             .refreshable { await model.load() }
         }
+    }
+    
+    private func assignee(for target: IssueStatus) -> String? {
+        target == .assigned ? AppConfig.demoAssigneeId : nil
     }
 }
 
