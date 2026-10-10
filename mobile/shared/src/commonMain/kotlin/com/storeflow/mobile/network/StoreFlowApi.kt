@@ -15,7 +15,7 @@ object StoreFlowRequests {
     )
     fun createIssue(token: String?, body: CreateIssueRequest): ApiRequest = request(
         "POST",
-        "/v1/issue",
+        "/v1/issues",
         token,
         storeFlowJson.encodeToString(
             CreateIssueRequest.serializer(),

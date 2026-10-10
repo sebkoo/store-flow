@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.storeflow.mobile.network.StoreFlowClient
+import com.storeflow.mobile.ui.CreateIssueScreen
 import com.storeflow.mobile.ui.IssueListScreen
 import com.storeflow.mobile.ui.IssueListViewModel
 
@@ -17,9 +18,14 @@ fun App(client: StoreFlowClient) {
     MaterialTheme {
         val viewModel = viewModel { IssueListViewModel(client) }
         var creating by remember { mutableStateOf(false) }
-        IssueListScreen(viewModel,
-        { creating = true },
-        DEMO_ASSIGNEE_ID
-        )
+        if (creating) {
+            CreateIssueScreen(
+                viewModel::create,
+                { creating = false }
+        )} else {
+            IssueListScreen(viewModel,
+                { creating = true },
+                DEMO_ASSIGNEE_ID)
+        }
     }
 }

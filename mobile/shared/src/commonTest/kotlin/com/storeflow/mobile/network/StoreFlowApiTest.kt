@@ -26,6 +26,8 @@ class StoreFlowApiTest {
                 IssuePriority.NORMAL
             )
         )
+        assertEquals("POST", request.method)
+        assertEquals("/v1/issues", request.path)
         assertEquals(
             "application/json",
             request.headers["Content-Type"]
